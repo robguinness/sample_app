@@ -8,6 +8,7 @@ group :development do
   gem 'autotest-standalone', :require => 'autotest'
   gem 'autotest-rails-pure'
   gem 'turn'
+  gem 'annotate', '2.4.0'
 end
 
 group :test do
