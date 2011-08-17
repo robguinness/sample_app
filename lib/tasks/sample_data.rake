@@ -16,5 +16,13 @@ namespace :db do
                    :password => password,
                    :password_confirmation => password)
     end
+    
+    # Make sample microposts for first 6 users
+    User.all(:limit => 6).each do |user|
+      50.times do
+        user.microposts.create!(:content => Faker::Lorem.sentence(5))
+      end
+    end
+    
   end
 end

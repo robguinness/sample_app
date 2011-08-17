@@ -85,6 +85,15 @@ describe UsersController do
       get :show, :id => @user
       response.should have_selector("h1>img", :class => "gravatar")
     end
+    
+    it "should show the user's microposts" do
+      mp1 = Factory(:micropost, :user => @user, :content => "Foo bar")
+      mp2 = Factory(:micropost, :user => @user, :content => "Baz quux")
+      get :show, :id => @user
+      response.should have_selector("span.content", :content => mp1.content)
+      response.should have_selector("span.content", :content => mp2.content)
+    end
+    
   end
     
   describe "GET 'new'" do
@@ -314,11 +323,11 @@ describe UsersController do
       end
     end
 
-    describe "as an admin user" do
+    describe "as an admin user," do
 
       before(:each) do
-        admin = Factory(:user, :email => "admin@example.com", :admin => true)
-        test_sign_in(admin)
+        @admin = Factory(:user, :email => "admin@example.com", :admin => true)
+        test_sign_in(@admin)
       end
 
       it "should destroy the user" do
@@ -331,6 +340,15 @@ describe UsersController do
         delete :destroy, :id => @user
         response.should redirect_to(users_path)
       end
+      
+      it "should not be able to destroy self" do
+        lambda do
+          delete :destroy, :id => @admin
+        end.should change(User, :count).by(0)
+        response.should redirect_to(users_path)
+        flash[:notice].should =~ /cannot delete yourself/
+
+      end  
     end
   end  
 end 
